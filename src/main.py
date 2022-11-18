@@ -1,9 +1,8 @@
 """Application main module running an async HTTP web server."""
 
-import sys
 import argparse
 from aiohttp.web import Application, run_app, post
-from handler import handle_optimize_request
+from handler.handler import handle_optimize_request
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--port', type = int, nargs = '?', default = 8888)

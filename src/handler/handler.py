@@ -3,7 +3,7 @@
 import json
 from jsonschema import validate
 from aiohttp.web import Request, Response
-from optimizer import Contract, calculate_optimal_schedule
+from optimizer.optimizer import Contract, calculate_optimal_schedule
 
 contracts_schema = {
     'type': 'object',

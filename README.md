@@ -15,6 +15,21 @@ $ py -m pip install -r requirements.txt
 $ python3 -m pip install -r requirements.txt
 ```
 
+## Run tests
+
+From the `src` directory, execute the following command:
+
+### Windows
+
+```
+py -3 -m pytest
+```
+
+### Linux
+```
+$ python3 -m pytest
+```
+
 ## Run the application server
 
 From the project root directory, execute the following command:
