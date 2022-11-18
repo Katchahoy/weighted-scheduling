@@ -3,7 +3,11 @@
 from collections import namedtuple
 
 Contract = namedtuple('Contract', 'name, start, duration, price')
-Schedule = namedtuple('Schedule', 'income, path')
+
+class Schedule:
+    def __init__(self, income, path):
+        self.income = income
+        self.path = path
 
 def find_latest_ending_before(contracts: list[Contract], date: int) -> int:
     """Returns the latest contract (by end date) before a given date, or null if there is none."""
