@@ -55,3 +55,24 @@ class TestOptimizer(unittest.TestCase):
         schedule = calculate_optimal_schedule(contracts)
         self.assertEqual(schedule.income, 18)
         self.assertEqual(schedule.path, ["Contract1", "Contract3"])
+    
+    def test_double_superposition(self):
+        contracts = [
+            Contract("Contract1", 2, 2, 9),
+            Contract("Contract2", 0, 3, 5),
+            Contract("Contract3", 3, 3, 5)
+        ]
+        schedule = calculate_optimal_schedule(contracts)
+        self.assertEqual(schedule.income, 10)
+        self.assertEqual(schedule.path, ["Contract2", "Contract3"])
+    
+    def test_short_duration_high_weight(self):
+        contracts = [
+            Contract("Contract1", 0, 4, 3),
+            Contract("Contract2", 2, 4, 2),
+            Contract("Contract3", 3, 2, 5),
+            Contract("Contract4", 4, 5, 1)
+        ]
+        schedule = calculate_optimal_schedule(contracts)
+        self.assertEqual(schedule.income, 5)
+        self.assertEqual(schedule.path, ["Contract3"])

@@ -39,11 +39,12 @@ def calculate_optimal_schedule(contracts: list[Contract]) -> Schedule:
     while i < len(contracts):
         # If no contract can be executed before this one, just include it.
         previous_price = 0 if indexes[i] < 0 else schedules[indexes[i]].income
+        previous_path = [] if indexes[i] < 0 else schedules[indexes[i]].path
         income_adding_node = previous_price + contracts[i].price
         # Check if a higher income can be obtained by adding the contract.
         income_previous_node = schedules[i - 1].income
         if income_adding_node > income_previous_node:
-            path = schedules[indexes[i]].path + [contracts[i].name]
+            path = previous_path + [contracts[i].name]
             schedules.append(Schedule(income_adding_node, path))
         else:
             schedules.append(Schedule(income_previous_node, schedules[i - 1].path))
