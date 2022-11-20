@@ -5,9 +5,27 @@ from collections import namedtuple
 Contract = namedtuple('Contract', 'name, start, duration, price')
 
 class Schedule:
-    def __init__(self, income, path):
+    def __init__(self, income: int, path: list[str]):
         self.income = income
         self.path = path
+
+class ScheduleNode:
+    def __init__(
+        self,
+        contract: Contract,
+        node: 'ScheduleNode' = None
+    ):
+        self.income = contract.price  + (node.income if node != None else 0)
+        self.contract_name = contract.name
+        self.node = node
+
+    def path(self) -> list[str]:
+        if self.node == None:
+            return [self.contract_name]
+        else:
+            path = self.node.path()
+            path.append(self.contract_name)
+            return path
 
 def find_latest_ending_before(contracts: list[Contract], date: int) -> int:
     """Returns the latest contract (by end date) before a given date, or null if there is none."""
@@ -34,20 +52,22 @@ def calculate_optimal_schedule(contracts: list[Contract]) -> Schedule:
     indexes = [find_latest_ending_before(contracts, contract.start) for contract in contracts]
 
     # Build a list of schedules with the highest income subset of contracts up to a given index.
-    schedules = [Schedule(income = contracts[0].price, path = [contracts[0].name])]
+    schedules = [ScheduleNode(contracts[0])]
     i = 1
     while i < len(contracts):
         # If no contract can be executed before this one, just include it.
         previous_price = 0 if indexes[i] < 0 else schedules[indexes[i]].income
-        previous_path = [] if indexes[i] < 0 else schedules[indexes[i]].path
         income_adding_node = previous_price + contracts[i].price
         # Check if a higher income can be obtained by adding the contract.
         income_previous_node = schedules[i - 1].income
         if income_adding_node > income_previous_node:
-            path = previous_path + [contracts[i].name]
-            schedules.append(Schedule(income_adding_node, path))
+            if indexes[i] < 0:
+                schedules.append(ScheduleNode(contracts[i]))
+            else:
+                schedules.append(ScheduleNode(contracts[i], schedules[indexes[i]]))
         else:
-            schedules.append(Schedule(income_previous_node, schedules[i - 1].path))
+            schedules.append(schedules[i - 1])
         i += 1
 
-    return schedules[len(contracts) - 1]
+    optimal_schedule = schedules[len(contracts) - 1]
+    return Schedule(optimal_schedule.income, optimal_schedule.path())

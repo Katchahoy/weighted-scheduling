@@ -76,3 +76,23 @@ class TestOptimizer(unittest.TestCase):
         schedule = calculate_optimal_schedule(contracts)
         self.assertEqual(schedule.income, 5)
         self.assertEqual(schedule.path, ["Contract3"])
+
+    def test_duplicate_with_higher_price(self):
+        contracts = [
+            Contract("Contract1", 0, 4, 3),
+            Contract("Contract2", 0, 4, 4),
+            Contract("Contract3", 5, 2, 5)
+        ]
+        schedule = calculate_optimal_schedule(contracts)
+        self.assertEqual(schedule.income, 9)
+        self.assertEqual(schedule.path, ["Contract2", "Contract3"])
+
+    def test_duplicate_with_higher_price_reversed(self):
+        contracts = [
+            Contract("Contract1", 0, 4, 4),
+            Contract("Contract2", 0, 4, 3),
+            Contract("Contract3", 5, 2, 5)
+        ]
+        schedule = calculate_optimal_schedule(contracts)
+        self.assertEqual(schedule.income, 9)
+        self.assertEqual(schedule.path, ["Contract1", "Contract3"])
