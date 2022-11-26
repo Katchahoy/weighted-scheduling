@@ -1,6 +1,7 @@
 import unittest
 from optimizer.optimizer import Contract, calculate_optimal_schedule
 
+
 class TestOptimizer(unittest.TestCase):
 
     def test_empty_list(self):
@@ -34,7 +35,10 @@ class TestOptimizer(unittest.TestCase):
         ]
         schedule = calculate_optimal_schedule(contracts)
         self.assertEqual(schedule.income, 21)
-        self.assertEqual(schedule.path, ["Contract1", "Contract2", "Contract3"])
+        self.assertEqual(
+            schedule.path,
+            ["Contract1", "Contract2", "Contract3"]
+        )
 
     def test_simple_sequence_with_gaps(self):
         contracts = [
@@ -44,8 +48,11 @@ class TestOptimizer(unittest.TestCase):
         ]
         schedule = calculate_optimal_schedule(contracts)
         self.assertEqual(schedule.income, 21)
-        self.assertEqual(schedule.path, ["Contract1", "Contract2", "Contract3"])
-    
+        self.assertEqual(
+            schedule.path,
+            ["Contract1", "Contract2", "Contract3"]
+        )
+
     def test_simple_superposition(self):
         contracts = [
             Contract("Contract1", 0, 5, 10),
@@ -55,7 +62,7 @@ class TestOptimizer(unittest.TestCase):
         schedule = calculate_optimal_schedule(contracts)
         self.assertEqual(schedule.income, 18)
         self.assertEqual(schedule.path, ["Contract1", "Contract3"])
-    
+
     def test_double_superposition(self):
         contracts = [
             Contract("Contract1", 2, 2, 9),
@@ -65,7 +72,7 @@ class TestOptimizer(unittest.TestCase):
         schedule = calculate_optimal_schedule(contracts)
         self.assertEqual(schedule.income, 10)
         self.assertEqual(schedule.path, ["Contract2", "Contract3"])
-    
+
     def test_short_duration_high_weight(self):
         contracts = [
             Contract("Contract1", 0, 4, 3),

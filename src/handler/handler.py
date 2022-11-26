@@ -1,4 +1,7 @@
-"""HTTP request handler accepting a list of contracts and returning the optimal schedule."""
+"""
+HTTP request handler accepting a list of contracts
+and returning the optimal schedule.
+"""
 
 import json
 from jsonschema import validate
@@ -10,7 +13,7 @@ contracts_schema = {
     'properties': {
         'name': {
             'type': 'string',
-            'maxLength':64
+            'maxLength': 64
         },
         'start': {
             'type': 'integer'
@@ -24,22 +27,32 @@ contracts_schema = {
     }
 }
 
+
 def validate_json(data):
-    """Validates that the JSON array can be mapped to a list of Contract objects."""
+    """Validates that the JSON array can be mapped to a list of contracts."""
     for contract in data:
-        validate(instance = contract, schema = contracts_schema)
+        validate(instance=contract, schema=contracts_schema)
+
 
 def as_contract(item: dict) -> Contract:
-    """Creates a Contract object from a dictionary with similar fields."""
-    return Contract(item['name'], item['start'], item['duration'], item['price'])
+    """Creates a contract from a dictionary with similar fields."""
+    return Contract(
+        item['name'],
+        item['start'],
+        item['duration'],
+        item['price']
+    )
+
 
 def parse_contracts(text: str) -> list[Contract]:
     """Converts a JSON text input tu a list of Contract objects."""
-    return json.loads(text, object_hook = as_contract)
+    return json.loads(text, object_hook=as_contract)
+
 
 def to_json(obj) -> str:
-    """Convert any object to a JSON representation of its fields as a dictionary."""
-    return json.dumps(obj, default = lambda o: o.__dict__)
+    """Convert any object to a JSON of its fields as a dictionary."""
+    return json.dumps(obj, default=lambda o: o.__dict__)
+
 
 async def handle_optimize_request(request: Request) -> Response:
     """
@@ -50,12 +63,12 @@ async def handle_optimize_request(request: Request) -> Response:
     try:
         contracts = parse_contracts(request_body)
     except Exception:
-        return Response(status = 400)
+        return Response(status=400)
 
     optimal_schedule = calculate_optimal_schedule(contracts)
 
     return Response(
-        status = 200,
-        headers = {'Content-Type': 'application/json'},
-        text = to_json(optimal_schedule)
+        status=200,
+        headers={'Content-Type': 'application/json'},
+        text=to_json(optimal_schedule)
     )

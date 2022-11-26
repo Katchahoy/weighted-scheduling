@@ -4,10 +4,12 @@ from collections import namedtuple
 
 Contract = namedtuple('Contract', 'name, start, duration, price')
 
+
 class Schedule:
     def __init__(self, income: int, path: list[str]):
         self.income = income
         self.path = path
+
 
 class ScheduleNode:
     def __init__(
@@ -15,20 +17,24 @@ class ScheduleNode:
         contract: Contract,
         node: 'ScheduleNode' = None
     ):
-        self.income = contract.price  + (node.income if node != None else 0)
+        self.income = contract.price + (0 if node is None else node.income)
         self.contract_name = contract.name
         self.node = node
 
     def path(self) -> list[str]:
-        if self.node == None:
+        if self.node is None:
             return [self.contract_name]
         else:
             path = self.node.path()
             path.append(self.contract_name)
             return path
 
-def find_latest_ending_before(contracts: list[Contract], date: int) -> int:
-    """Returns the latest contract (by end date) before a given date, or null if there is none."""
+
+def find_latest_before(contracts: list[Contract], date: int) -> int:
+    """
+    Returns the latest contract (by end date) before a given date,
+    or null if there is none.
+    """
     lower = 0
     upper = len(contracts) - 1
     while lower <= upper:
@@ -42,16 +48,20 @@ def find_latest_ending_before(contracts: list[Contract], date: int) -> int:
             return mid
     return lower - 1
 
+
 def calculate_optimal_schedule(contracts: list[Contract]) -> Schedule:
     """Returns the Schedule with the highest income that can be constructed."""
     if len(contracts) == 0:
         return Schedule(0, [])
     # Sort contracts by end date.
-    contracts.sort(key = lambda contract: contract.start + contract.duration)
-    # Find for each contract the index of the latest contract that can be executed before it.
-    indexes = [find_latest_ending_before(contracts, contract.start) for contract in contracts]
+    contracts.sort(key=lambda contract: contract.start + contract.duration)
+    # Find the index of the latest contract that can be executed before each.
+    indexes = [
+        find_latest_before(contracts, contract.start) for contract in contracts
+    ]
 
-    # Build a list of schedules with the highest income subset of contracts up to a given index.
+    # Build a list of schedules with the highest income subset
+    # of contracts up to a given index.
     schedules = [ScheduleNode(contracts[0])]
     i = 1
     while i < len(contracts):
@@ -64,7 +74,9 @@ def calculate_optimal_schedule(contracts: list[Contract]) -> Schedule:
             if indexes[i] < 0:
                 schedules.append(ScheduleNode(contracts[i]))
             else:
-                schedules.append(ScheduleNode(contracts[i], schedules[indexes[i]]))
+                schedules.append(
+                    ScheduleNode(contracts[i], schedules[indexes[i]])
+                )
         else:
             schedules.append(schedules[i - 1])
         i += 1
